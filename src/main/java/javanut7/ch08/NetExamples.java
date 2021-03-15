@@ -22,7 +22,8 @@ public class NetExamples {
 
     private void run() throws IOException {
         URL url = new URL("http://127.0.0.1:1338/");
-        try (InputStream in = url.openStream()) {
+        try{
+        	InputStream in = url.openStream();
             Files.copy(in, Paths.get("output3.txt"), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -30,7 +31,7 @@ public class NetExamples {
     }
 
     private void run2() throws IOException {
-        URL url = new URL("http://www.google.com/");
+        URL url = new URL("http://www.baidu.com/");
         try {
             URLConnection conn = url.openConnection();
 
@@ -70,9 +71,12 @@ public class NetExamples {
                 || response == HttpURLConnection.HTTP_MOVED_TEMP) {
             System.out.println("Moved to: " + conn.getHeaderField("Location"));
         } else {
-            try (InputStream in = conn.getInputStream()) {
+            try{
+            	InputStream in = conn.getInputStream();
                 Files.copy(in, Paths.get("bbc.txt"),
                         StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                // Handle exception
             }
         }
     }
@@ -82,24 +86,30 @@ public class NetExamples {
         int port = 80;
         String filename = "/";
 
-        try (Socket sock = new Socket(hostname, port);
-                BufferedReader from = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                PrintWriter to = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));) {
-
+        try {
+        	Socket sock = new Socket(hostname, port);
+            BufferedReader from = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            PrintWriter to = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));
             to.print("GET " + filename + " HTTP/1.1\r\nHost: " + hostname + "\r\n\r\n"); // The HTTP protocol
             to.flush();
 
             for (String l = null; (l = from.readLine()) != null;)
                 System.out.println(l);
+        } catch (IOException e) {
+            // Handle exception
         }
 
     }
 
     private int run5(String host) throws IOException {
-        URL url = new URL("htp://" + host + "/");
-        try (InputStream in = url.openStream()) {
+        URL url = new URL("http://" + host + "/");
+        try {
+        	InputStream in = url.openStream();
             return in.available();
+        } catch (IOException e) {
+        	 System.out.println(e.getMessage());
         }
+		return -1;
     }
 
     /**
@@ -109,11 +119,11 @@ public class NetExamples {
     public static void main(String[] args) throws IOException {
         instance = new NetExamples();
         System.out.println("Bytes estimated: " + instance.run5("www.jclarity.com"));
-        System.out.println("Bytes estimated: " + instance.run5("www.google.com"));
-//		instance.run();
-//		instance.run2();
-//		instance.run3();
-//		instance.run4();
+        System.out.println("Bytes estimated: " + instance.run5("www.baidu.com"));
+		instance.run();
+		instance.run2();
+		instance.run3();
+		instance.run4();
     }
 
 }
